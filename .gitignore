@@ -1,0 +1,10 @@
+
+weather1/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+.ipynb_checkpoints/
+.DS_Store
+.env
