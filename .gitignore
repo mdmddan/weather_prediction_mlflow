@@ -8,3 +8,6 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 .env
+mlruns/
+experiment_results.csv
+experiment_results_plot.png
