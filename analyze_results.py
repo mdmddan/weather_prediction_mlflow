@@ -13,7 +13,7 @@ experiment_results = mlflow.search_runs(
 )
 
 print("\nTop experiment results:")
-print(experiment_results[["run_id", "params.model", "metrics.rmse_train", "metrics.rmse_test", "metrics.rmse_gap"]])
+print(experiment_results[["run_id", "tags.mlflow.runName", "params.model", "metrics.rmse_train", "metrics.rmse_test", "metrics.rmse_gap"]])
 
 # 2. Guardar los resultados a CSV
 experiment_results.to_csv("experiment_results.csv", index=False)
@@ -35,6 +35,7 @@ table_results = experiment_results[["params.model", "metrics.rmse_train", "metri
 # Renombrar columnas para que se vea bien en la tabla
 table_results = table_results.rename(columns={
     "params.model": "Model",
+    "tags.mlflow.runName" : "Run name",
     "metrics.rmse_train": "RMSE Train",
     "metrics.rmse_test": "RMSE Test",
     "metrics.rmse_gap": "RMSE Gap"

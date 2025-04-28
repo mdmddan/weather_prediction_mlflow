@@ -15,13 +15,53 @@ from datetime import datetime
 # -----------------------
 # Preprocesamiento
 # -----------------------
+
+def time_based_train_test_split(
+    X,
+    y,
+    date_col,
+    test_size):
+    """
+    Split data into train and test sets based on chronological order of a date column.
+
+    Parameters:
+    - X: Features DataFrame.
+    - y: Target Series or DataFrame.
+    - date_col: Name of the column in X that contains the date.
+    - test_size: Proportion of the data to be used as the test set.
+
+    Returns:
+    - X_train, X_test, y_train, y_test
+    """
+    # Concatenate features and target to sort together
+    data = X.copy()
+    data['_target'] = y
+    data = data.sort_values(by=date_col)
+
+    # Compute split index
+    split_idx = int(len(data) * (1 - test_size))
+
+    # Perform split
+    train = data.iloc[:split_idx]
+    test = data.iloc[split_idx:]
+
+    # Separate features and target again
+    X_train = train.drop(columns=['_target','date'])
+    y_train = train['_target']
+    X_test = test.drop(columns=['_target','date'])
+    y_test = test['_target']
+
+    return X_train, X_test, y_train, y_test
+
+
 def preprocess_data(filepath):
     df = pd.read_csv(filepath).dropna()
-    features = ['cloud_cover', 'sunshine', 'global_radiation',
+    features = ['date','cloud_cover', 'sunshine', 'global_radiation',
                 'precipitation', 'pressure', 'snow_depth']
+    df["date"] = pd.to_datetime(df["date"], format="%Y%m%d")
     X = df[features]
     y = df['mean_temp']
-    return train_test_split(X, y, test_size=0.2, random_state=42)
+    return time_based_train_test_split(X, y, date_col = 'date', test_size=0.2)
 
 # -----------------------
 # Naming del run
@@ -149,5 +189,5 @@ if __name__ == "__main__":
     )
 
     print("\nTop experiment results:")
-    print(experiment_results[["run_id", "params.model", "metrics.rmse_train", "metrics.rmse_test", "metrics.rmse_gap"]])
+    print(experiment_results[["run_id","tags.mlflow.runName", "params.model", "metrics.rmse_train", "metrics.rmse_test", "metrics.rmse_gap"]])
 
